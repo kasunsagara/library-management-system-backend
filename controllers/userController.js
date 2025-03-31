@@ -2,185 +2,114 @@ import User from "../models/user.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import axios from "axios";
 
 dotenv.config();
 
 export function createUser(req, res) {
-
     const newUserData = req.body;
 
-    if(newUserData.type == "admin") {
+    if (!newUserData.FullName || !newUserData.email || !newUserData.password || !newUserData.confirmPassword) {
+        return res.status(400).json({ message: "All fields are required." });
+    }
 
-        if(req.user == null) {
-            res.json({
-                message: "Please login as administrator to create admin accounts"
-            });
-            return;
-        }
+    if (newUserData.password !== newUserData.confirmPassword) {
+        return res.status(400).json({ message: "Passwords do not match." });
+    }
 
-        if(req.user.type != "admin") {
-            res.json({
-                message: "Please login as administrator to create admin accounts"
-            });
-            return;
+    if (newUserData.role === "admin" || newUserData.role === "librarian") {
+        if (!req.user || req.user.role !== "admin") {
+            return res.status(403).json({ message: "Only an admin can create admin or librarian accounts." });
         }
+    } else {
+        newUserData.role = "user";
     }
 
     newUserData.password = bcrypt.hashSync(newUserData.password, 10);
+    delete newUserData.confirmPassword; 
 
     const user = new User(newUserData);
-
+    
     user.save()
-    .then(() => {
-        res.json({
-            message: "User created"
+        .then(() => {
+            res.status(201).json({ message: "User created successfully." });
         })
-    }).catch(() => {
-        res.json({
-            message: "User not created"
-        })
-    })
+        .catch((error) => {
+            res.status(500).json({ message: "User not created.", error: error.message });
+        });
 }
 
 export function loginUser(req, res) {
-
-    User.find({email: req.body.email})
-    .then((users) => {
-        if(users.length == 0) {
-            res.json({
-                message: "User not found"
-            })
-        } else {
-            const user = users[0];
+    User.findOne({ email: req.body.email })
+        .then((user) => {
+            if (!user) {
+                return res.status(404).json({ message: "User not found" });
+            }
 
             const isPasswordCorrect = bcrypt.compareSync(req.body.password, user.password);
-
-            if(isPasswordCorrect) {
-                const token = jwt.sign({
-                    email: user.email,
-                    firstName: user.firstName,
-                    lastName: user.lastName,
-                    isBlocked: user.isBlocked,
-                    type: user.type,
-                    profilePicture: user.profilePicture
-                }, process.env.SECRET);
-                
-                res.json({
-                    message: "User logged in",
-                    token: token,
-                    user: {
-                        email: user.email,
-                        firstName: user.firstName,
-                        lastName: user.lastName,
-                        type: user.type,
-                        profilePicture: user.profilePicture
-                    }
-                })
-            } else {
-                res.json({
-                    message: "User not logged in (wrong password)"
-                })
+            if (!isPasswordCorrect) {
+                return res.status(401).json({ message: "Incorrect password" });
             }
-        }
-    })
+
+            const token = jwt.sign(
+                {
+                    email: user.email,
+                    FullName: user.FullName,
+                    role: user.role,
+                    profilePicture: user.profilePicture,
+                },
+                process.env.SECRET,
+                { expiresIn: "1h" }
+            );
+
+            res.json({
+                message: "User logged in",
+                token: token,
+                user: {
+                    email: user.email,
+                    FullName: user.FullName,
+                    role: user.role,
+                    profilePicture: user.profilePicture,
+                },
+            });
+        })
+        .catch((error) => {
+            res.status(500).json({ message: "Login failed", error: error.message });
+        });
 }
 
 export function isAdmin(req) {
-    if(req.user == null) {
+    if (req.user == null) {
         return false;
     }
-
-    if(req.user.type != "admin") {
+    if (req.user.role !== "admin") {
         return false;
     }
-
     return true;
 }
 
-export function isCustomer(req) {
-    if(req.user == null) {
+export function isLibrarian(req) {
+    if (req.user == null) {
         return false;
     }
-
-    if(req.user.type != "customer") {
+    if (req.user.role !== "librarian") {
         return false;
     }
-
     return true;
-} 
+}
 
-export async function googleLogin(req,res){
-    console.log(req.body)
-    const token = req.body.token
-    //'https://www.googleapis.com/oauth2/v3/userinfo'
-    try{
-      const response = await axios.get('https://www.googleapis.com/oauth2/v3/userinfo',{
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      const email = response.data.email
-      //check if user exists
-      const usersList = await User.find({email: email})
-      if(usersList.length >0){
-        const user = usersList[0]
-        const token = jwt.sign({
-          email : user.email,
-          firstName : user.firstName,
-          lastName : user.lastName,
-          isBlocked : user.isBlocked,
-          type : user.type,
-          profilePicture : user.profilePicture
-        } , process.env.SECRET)
-        
-        res.json({
-          message: "User logged in",
-          token: token,
-          user : {
-            firstName : user.firstName,
-            lastName : user.lastName,
-            type : user.type,
-            profilePicture : user.profilePicture,
-            email : user.email
-          }
-        })
-      }else{
-        //create new user
-        const newUserData = {
-          email: email,
-          firstName: response.data.given_name,
-          lastName: response.data.family_name,
-          type: "customer",
-          password: "ffffff",
-          profilePicture: response.data.picture
-        }
-        const user = new User(newUserData)
-        user.save().then(()=>{
-          res.json({
-            message: "User created"
-          })
-        }).catch((error)=>{
-          res.json({      
-            message: "User not created"
-          })
-        })
-      }
-    }catch(e){
-      res.json({
-        message: "Google login failed"
-      })
+export function isUser(req) {
+    if (req.user == null) {
+        return false;
     }
-  }
-
-  export async function getUser(req,res){
-    if(req.user == null) {
-      res.status(404).json({
-          message: "Please login to view user details"
-      })
-      return;
+    if (req.user.role !== "user") {
+        return false;
     }
+    return true;
+}
 
-    res.json(req.user)
-  }
-  
+export async function getUser(req, res) {
+    if (req.user == null) {
+        return res.status(401).json({ message: "Please login to view user details" });
+    }
+    res.json(req.user);
+}

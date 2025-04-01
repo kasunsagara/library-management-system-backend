@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const userSchema = mongoose.Schema({
-    FullName: {
+    fullName: {  // Follow camelCase for consistency
         type: String,
         required: true
     },
@@ -11,10 +11,6 @@ const userSchema = mongoose.Schema({
         unique: true
     },
     password: {
-        type: String,
-        required: true
-    },
-    confirmPassword: {
         type: String,
         required: true
     },
@@ -28,7 +24,6 @@ const userSchema = mongoose.Schema({
     }
 });
 
-const User = mongoose.model("users", userSchema);
+const User = mongoose.model("User", userSchema);
 
 export default User;
-    

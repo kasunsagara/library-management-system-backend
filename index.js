@@ -51,3 +51,29 @@ app.listen(
         console.log("Server is running on port 8000");
     }
 );
+
+/* 
+user
+{
+    "email": "john@example.com",
+    "password": "securePassword123"
+}
+
+user
+{
+    "email": "alice.smith@example.com",
+    "password": "StrongPassword123"
+}
+
+admin
+{
+    "email": "kasunsagara689@gmail.com",
+    "password": "0924"
+}
+
+librarian
+{
+    "email": "kasunsagara9901@gmail.com",
+    "password": "2001"
+}
+*/

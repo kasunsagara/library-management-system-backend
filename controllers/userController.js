@@ -8,9 +8,9 @@ dotenv.config();
 const SECRET_KEY = process.env.SECRET;
 export async function createUser(req, res) {
     try {
-        const { fullName, email, password, role, profilePicture } = req.body;
+        const { firstName, lastName, email, password, role, profilePicture } = req.body;
 
-        if (!fullName || !email || !password) {
+        if (!firstName || !lastName || !email || !password) {
             return res.status(400).json({ message: "All fields are required." });
         }
 
@@ -41,7 +41,8 @@ export async function createUser(req, res) {
         const hashedPassword = await bcrypt.hash(password, 12);
 
         const newUser = new User({
-            fullName,
+            firstName,
+            lastName,
             email,
             password: hashedPassword,
             role: userRole,
@@ -84,7 +85,8 @@ export async function loginUser(req, res) {
             token,
             user: {
                 email: user.email,
-                fullName: user.fullName,
+                firstName: user.firstName,
+                lastName: user.lastName,
                 role: user.role,
                 profilePicture: user.profilePicture
             }

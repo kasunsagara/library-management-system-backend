@@ -37,6 +37,38 @@ export async function getBooks(req, res) {
     }
 }
 
+export async function getBookById(req, res) {
+
+    try {
+        const bookId = req.params.bookId;
+
+        const book = await Book.findOne({bookId: bookId});
+
+        res.json(book);
+
+    } catch (error) {
+        res.status(500).json({
+            message: error
+        });
+    }
+}
+
+export async function searchBooks(req, res) {
+    const query = req.params.query;
+    try {
+      const books = await Book.find({
+        $or: [
+          { bookName: { $regex: query, $options: "i" } },
+        ],
+      });
+      res.json(books);
+    } catch (e) {
+      res.status(500).json({
+        e,
+      });
+    }
+  }
+
 export async function deleteBook(req, res) {
     if (!isAdmin(req)) {
         res.status(403).json({
@@ -81,3 +113,4 @@ export async function updateBook(req, res) {
         });
     }
 }
+

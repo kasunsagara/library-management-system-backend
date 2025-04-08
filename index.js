@@ -69,13 +69,13 @@ librarian
 
 user
 {
-    "email": "john@example.com",
-    "password": "securePassword123"
+    "email": "john@gmail.com",
+    "password": "a123"
 }
 
 user
 {
-    "email": "alice.smith@example.com",
-    "password": "StrongPassword123"
+    "email": "alice@gmail.com",
+    "password": "b123"
 }
 */

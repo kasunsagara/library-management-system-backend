@@ -36,3 +36,48 @@ export async function getBooks(req, res) {
         });
     }
 }
+
+export async function deleteBook(req, res) {
+    if (!isAdmin(req)) {
+        res.status(403).json({
+            message: "Please login as administrator to delete products",
+        });
+        return;
+    }
+
+    const bookId = req.params.bookId;
+
+    try {
+        await Book.deleteOne({ bookId: bookId });
+        res.json({
+            message: "Book deleted",
+        });
+    } catch (error) {
+        res.status(403).json({
+            message: error
+        });
+    }
+}
+
+export async function updateBook(req, res) {
+    if (!isAdmin(req)) {
+        res.status(403).json({
+            message: "Please login as administrator to update products"
+        });
+        return;
+    }
+
+    const bookId = req.params.bookId;
+    const newBookData = req.body;
+
+    try {
+        await Book.updateOne({ bookId: bookId }, newBookData);
+        res.json({
+            message: "Book updated"
+        });
+    } catch (error) {
+        res.status(403).json({
+            message: error
+        });
+    }
+}

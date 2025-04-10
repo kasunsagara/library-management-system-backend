@@ -57,13 +57,13 @@ app.listen(
 /* 
 admin
 {
-    "email": "kasunsagara689@gmail.com",
-    "password": "0924"
+    "email": "kasunsagara9901@gmail.com",
+    "password": "2002"
 }
 
 librarian
 {
-    "email": "kasunsagara9901@gmail.com",
+    "email": "kasunsagara689@gmail.com",
     "password": "2001"
 }
 

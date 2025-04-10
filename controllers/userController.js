@@ -136,3 +136,25 @@ export async function getUsers(req, res) {
       });
     }
   }
+
+  export async function deleteUser(req, res) {
+    if (!isLibrarian(req)) {
+        res.status(403).json({
+            message: "Please login as librarian to delete users",
+        });
+        return;
+    }
+
+    const email = req.params.email;
+
+    try {
+        await User.deleteOne({ email: email });
+        res.json({
+            message: "User deleted"
+        });
+    } catch (error) {
+        res.status(403).json({
+            message: error
+        });
+    }
+}

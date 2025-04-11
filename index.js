@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import userRouter from "./routes/userRouter.js";
 import bookRouter from "./routes/bookRouter.js";
+import borrowRouter from "./routes/borrowRouter.js";
 import cors from "cors";
 
 dotenv.config();
@@ -46,6 +47,7 @@ app.use(
                 
 app.use("/api/users", userRouter);
 app.use("/api/books", bookRouter);
+app.use("/api/borrows", borrowRouter);
 
 app.listen(
     8000,

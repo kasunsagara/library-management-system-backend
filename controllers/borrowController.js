@@ -24,6 +24,7 @@ export async function createBorrow(req, res) {
 
       newBookArray.push({
         name: book.bookName,
+        id: book.bookId,
         image: book.images[0]
       });
     }
@@ -58,6 +59,7 @@ export async function getQuote(req, res) {
 
       newBookArray.push({
         name: book.bookName,
+        id: book.bookId,
         image: book.images[0]
       });
     }

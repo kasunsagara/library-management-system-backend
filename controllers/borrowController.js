@@ -10,8 +10,8 @@ export async function createBorrow(req, res) {
   try {
     const latestBorrow = await Borrow.find().sort({ borrowId: -1 }).limit(1);
     let borrowId = latestBorrow.length === 0 
-      ? "LMS0001" 
-      : "LMS" + (parseInt(latestBorrow[0].borrowId.replace("LMS", "")) + 1).toString().padStart(4, "0");
+      ? "BOR0001" 
+      : "BOR" + (parseInt(latestBorrow[0].borrowId.replace("BOR", "")) + 1).toString().padStart(4, "0");
 
     const newBorrowData = req.body;
     const newBookArray = [];
@@ -33,7 +33,7 @@ export async function createBorrow(req, res) {
     newBorrowData.borrowId = borrowId;
     newBorrowData.email = req.user.email;
     newBorrowData.borrowDate = new Date();
-    newBorrowData.dueDate = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000); // 7 days later
+    newBorrowData.dueDate = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000); // 14 days later
 
     const borrow = new Borrow(newBorrowData);
     const savedBorrow = await borrow.save();

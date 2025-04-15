@@ -34,6 +34,7 @@ export async function createBorrow(req, res) {
     newBorrowData.email = req.user.email;
     newBorrowData.borrowDate = new Date();
     newBorrowData.dueDate = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000); // 14 days later
+    //newBorrowData.dueDate = new Date(Date.now() + 1 * 60 * 1000); // 1 minute for testing, change to 14 days in production
 
     const borrow = new Borrow(newBorrowData);
     const savedBorrow = await borrow.save();

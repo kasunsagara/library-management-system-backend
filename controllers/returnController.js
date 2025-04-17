@@ -64,3 +64,26 @@ export async function getReturns(req, res) {
     res.status(500).json({ message: error.message });
   }
 }
+
+export async function getReturnById(req, res) {
+  try {
+    const { returnId } = req.params;
+    const user = req.user;
+
+    const returnRecord = await Return.findOne({ returnId });
+
+    if (!returnRecord) {
+      return res.status(404).json({ message: "Return record not found." });
+    }
+
+    if (isUser(req) && returnRecord.email !== user.email) {
+      return res.status(403).json({ message: "Access denied." });
+    }
+
+    res.json(returnRecord);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
+

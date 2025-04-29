@@ -1,6 +1,6 @@
 import Borrow from "../models/borrow.js";
 import Book from "../models/book.js";
-import { isLibrarian, isUser } from "./userController.js";
+import { isLibrarian, isAdmin, isUser } from "./userController.js";
 
 export async function createBorrow(req, res) {
   if (!isUser(req)) {
@@ -79,7 +79,7 @@ export async function getBorrow(req, res) {
 
     res.json(borrows);
     return;
-    }else if(isLibrarian(req)){
+    }else if(isLibrarian(req) || isAdmin(req)){
       const borrows = await Borrow.find({});
 
       res.json(borrows);

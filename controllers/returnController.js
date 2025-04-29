@@ -1,6 +1,6 @@
 import Return from "../models/return.js";
 import Borrow from "../models/borrow.js";
-import { isUser, isLibrarian } from "./userController.js";
+import { isUser, isLibrarian, isAdmin } from "./userController.js";
 
 export async function createReturn(req, res) {
   try {
@@ -54,7 +54,7 @@ export async function getReturns(req, res) {
     if (isUser(req)) {
       const returns = await Return.find({ email: req.user.email });
       return res.json(returns);
-    } else if (isLibrarian(req)) {
+    } else if (isLibrarian(req) || isAdmin(req)) {
       const returns = await Return.find();
       return res.json(returns);
     } else {

@@ -138,7 +138,7 @@ export async function getUsers(req, res) {
   }
 
   export async function deleteUser(req, res) {
-    if (!isLibrarian(req)) {
+    if (!isLibrarian(req) && !isAdmin(req)) {
         res.status(403).json({
             message: "Please login as librarian to delete users",
         });

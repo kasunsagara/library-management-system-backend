@@ -1,9 +1,9 @@
 import Book from "../models/book.js";
-import { isLibrarian } from "./userController.js";
+import { isLibrarian, isAdmin } from "./userController.js";
 
 export async function createBook(req, res) {
 
-    if(!isLibrarian(req)) {
+    if(!isLibrarian(req) && !isAdmin(req)) {
         res.status(403).json({
             message: "Please login as librarian to create books"
         });
@@ -70,7 +70,7 @@ export async function searchBooks(req, res) {
   }
 
 export async function deleteBook(req, res) {
-    if (!isLibrarian(req)) {
+    if (!isLibrarian(req) && !isAdmin(req)) {
         res.status(403).json({
             message: "Please login as librarian to delete books",
         });
@@ -92,7 +92,7 @@ export async function deleteBook(req, res) {
 }
 
 export async function updateBook(req, res) {
-    if (!isLibrarian(req)) {
+    if (!isLibrarian(req) && !isAdmin(req)) {
         res.status(403).json({
             message: "Please login as librarian to update books",
         });

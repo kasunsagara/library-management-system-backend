@@ -58,28 +58,3 @@ app.listen(
     }
 );
 
-/* 
-admin
-{
-    "email": "kasunsagara9901@gmail.com",
-    "password": "2002"
-}
-
-librarian
-{
-    "email": "kasunsagara689@gmail.com",
-    "password": "2001"
-}
-
-user
-{
-    "email": "john@gmail.com",
-    "password": "a123"
-}
-
-user
-{
-    "email": "alice@gmail.com",
-    "password": "b123"
-}
-*/
